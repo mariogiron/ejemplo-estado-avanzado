@@ -8,10 +8,11 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideStore } from '@ngrx/store';
+import { provideState, provideStore } from '@ngrx/store';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 
 import { routes } from './app.routes';
+import { cestaFeature } from './cesta/cesta.reducer';
 
 // Precios con formato español: 18,90 €
 registerLocaleData(localeEs);
@@ -22,8 +23,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withFetch()),
     { provide: LOCALE_ID, useValue: 'es' },
-    // El Store, de momento vacío: todavía no tiene ninguna rama de estado
+    // El Store, con una rama de estado: la cesta
     provideStore(),
+    provideState(cestaFeature),
     // La conexión con la extensión Redux DevTools del navegador
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
   ],
