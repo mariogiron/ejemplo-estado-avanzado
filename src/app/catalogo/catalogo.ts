@@ -1,6 +1,8 @@
 import { CurrencyPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { CatalogoActions } from '../cesta/cesta.actions';
 import { Libro } from '../libro';
 
 @Component({
@@ -17,6 +19,7 @@ import { Libro } from '../libro';
           <li>
             <strong>{{ libro.titulo }}</strong> · {{ libro.autor }} ·
             {{ libro.precio | currency: 'EUR' }}
+            <button (click)="elegir(libro)">Añadir a la cesta</button>
           </li>
         }
       </ul>
@@ -29,6 +32,13 @@ import { Libro } from '../libro';
   `,
 })
 export class Catalogo {
+  private readonly store = inject(Store);
+
   /** Estado del servidor: el catálogo es de la API. Aquí solo hay una copia. */
   protected readonly libros = httpResource<Libro[]>(() => '/api/libros');
+
+  /** El componente no cambia la cesta: cuenta lo que ha pasado y el Store decide. */
+  protected elegir(libro: Libro) {
+    this.store.dispatch(CatalogoActions.libroElegido({ libro }));
+  }
 }
