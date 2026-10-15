@@ -1,9 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { CategoriasStore } from '../categorias.store';
-import { CestaActions } from './cesta.actions';
-import { selectAviso, selectEnviando, selectLineas, selectTotal } from './cesta.selectors';
+import { CestaService } from './cesta.service';
 
 @Component({
   selector: 'app-cesta',
@@ -48,24 +46,23 @@ import { selectAviso, selectEnviando, selectLineas, selectTotal } from './cesta.
   `,
 })
 export class Cesta {
-  private readonly store = inject(Store);
+  private readonly cesta = inject(CestaService);
   protected readonly categorias = inject(CategoriasStore);
 
-  protected readonly lineas = this.store.selectSignal(selectLineas);
-  protected readonly total = this.store.selectSignal(selectTotal);
-  protected readonly enviando = this.store.selectSignal(selectEnviando);
-  protected readonly aviso = this.store.selectSignal(selectAviso);
+  protected readonly lineas = this.cesta.lineas;
+  protected readonly total = this.cesta.total;
+  protected readonly enviando = this.cesta.enviando;
+  protected readonly aviso = this.cesta.aviso;
 
   protected quitar(id: string) {
-    this.store.dispatch(CestaActions.libroQuitado({ id }));
+    this.cesta.quitar(id);
   }
 
   protected vaciar() {
-    this.store.dispatch(CestaActions.cestaVaciada());
+    this.cesta.vaciar();
   }
 
-  /** La página no llama a la API: despacha la acción, y el efecto se encarga. */
   protected confirmar() {
-    this.store.dispatch(CestaActions.pedidoConfirmado({ lineas: this.lineas() }));
+    void this.cesta.confirmar();
   }
 }

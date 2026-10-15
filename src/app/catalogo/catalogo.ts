@@ -1,9 +1,8 @@
 import { CurrencyPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { CategoriasStore } from '../categorias.store';
-import { CatalogoActions } from '../cesta/cesta.actions';
+import { CestaService } from '../cesta/cesta.service';
 import { Libro } from '../libro';
 import { FiltrosStore } from './filtros.store';
 
@@ -64,7 +63,7 @@ import { FiltrosStore } from './filtros.store';
   `,
 })
 export class Catalogo {
-  private readonly store = inject(Store);
+  private readonly cesta = inject(CestaService);
   protected readonly categorias = inject(CategoriasStore);
   protected readonly filtros = inject(FiltrosStore);
 
@@ -82,8 +81,7 @@ export class Catalogo {
     );
   });
 
-  /** El componente no cambia la cesta: cuenta lo que ha pasado y el Store decide. */
   protected elegir(libro: Libro) {
-    this.store.dispatch(CatalogoActions.libroElegido({ libro }));
+    this.cesta.anadir(libro);
   }
 }
