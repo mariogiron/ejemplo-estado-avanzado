@@ -1,6 +1,6 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 import { Libro } from '../libro';
-import { CatalogoActions, CestaActions } from './cesta.actions';
+import { CatalogoActions, CestaActions, PedidosApiActions } from './cesta.actions';
 
 /** Una línea de la cesta: qué libro y cuántos ejemplares. */
 export interface Linea {
@@ -11,10 +11,16 @@ export interface Linea {
 /** La rama «cesta» del estado global. */
 export interface EstadoCesta {
   lineas: Linea[];
+  /** true mientras el pedido viaja a la API. */
+  enviando: boolean;
+  /** Lo último que ha pasado con el pedido, para enseñarlo en la página. */
+  aviso: string;
 }
 
 const estadoInicial: EstadoCesta = {
   lineas: [],
+  enviando: false,
+  aviso: '',
 };
 
 /**
@@ -34,6 +40,19 @@ export const cestaFeature = createFeature({
       lineas: estado.lineas.filter((linea) => linea.libro.id !== id),
     })),
     on(CestaActions.cestaVaciada, (estado) => ({ ...estado, lineas: [] })),
+    // El reducer no llama a la API: solo apunta que el pedido está en camino
+    on(CestaActions.pedidoConfirmado, (estado) => ({ ...estado, enviando: true, aviso: '' })),
+    on(PedidosApiActions.pedidoAceptado, (estado, { numero }) => ({
+      ...estado,
+      lineas: [],
+      enviando: false,
+      aviso: `Pedido ${numero} confirmado. ¡Gracias!`,
+    })),
+    on(PedidosApiActions.pedidoRechazado, (estado, { error }) => ({
+      ...estado,
+      enviando: false,
+      aviso: `No se ha podido hacer el pedido: ${error}`,
+    })),
   ),
 });
 

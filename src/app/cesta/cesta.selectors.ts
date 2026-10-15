@@ -1,8 +1,8 @@
 import { createSelector } from '@ngrx/store';
 import { cestaFeature } from './cesta.reducer';
 
-/** createFeature ya trae un selector por cada propiedad de la rama: selectLineas. */
-export const { selectLineas } = cestaFeature;
+/** createFeature ya trae un selector por cada propiedad de la rama. */
+export const { selectLineas, selectEnviando, selectAviso } = cestaFeature;
 
 /** Cuántos ejemplares hay en la cesta, sumando las cantidades. */
 export const selectUnidades = createSelector(selectLineas, (lineas) =>

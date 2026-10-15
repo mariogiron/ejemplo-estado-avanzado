@@ -1,5 +1,6 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { Libro } from '../libro';
+import { Linea } from './cesta.reducer';
 
 /** Lo que puede pasar en el catálogo. Cada acción cuenta un hecho, en pasado. */
 export const CatalogoActions = createActionGroup({
@@ -15,5 +16,15 @@ export const CestaActions = createActionGroup({
   events: {
     'Libro quitado': props<{ id: string }>(),
     'Cesta vaciada': emptyProps(),
+    'Pedido confirmado': props<{ lineas: Linea[] }>(),
+  },
+});
+
+/** Lo que contesta la API. Estas acciones no las despacha un componente: las despacha el efecto. */
+export const PedidosApiActions = createActionGroup({
+  source: 'API de pedidos',
+  events: {
+    'Pedido aceptado': props<{ numero: string }>(),
+    'Pedido rechazado': props<{ error: string }>(),
   },
 });
