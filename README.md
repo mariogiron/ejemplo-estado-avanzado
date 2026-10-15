@@ -1,59 +1,58 @@
-# Libreria
+# Angular Avanzado · Módulo 5 · Gestión de estado desde cero
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.26.
+Una aplicación pequeña, la **Librería**, que empieza recién salida de `ng new` y a la que se le añade, paso a paso, gestión de estado: NgRx Store para la cesta, NgRx SignalStore para las categorías y para los filtros, y dos alternativas (un servicio con signals y NGXS) para comparar.
 
-## Development server
+## Arrancar
 
-To start a local development server, run:
+Dos terminales:
 
-```bash
-ng serve
+```
+node servidores/api.mjs     # API de la librería en http://localhost:3000 (700 ms de retardo)
+npm start                   # la aplicación en http://localhost:4200 (la API va por el proxy /api)
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+`RETARDO=2000 node servidores/api.mjs` hace la API más lenta, para ver mejor los estados de carga.
 
-## Code scaffolding
+Para comprobar el proxy, abre http://localhost:4200/api/categorias: tiene que salir una lista JSON. Si sale el HTML de la aplicación, reinicia `npm start`.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+En el navegador, instala la extensión **Redux DevTools** (Chrome, Edge o Firefox).
 
-```bash
-ng generate component component-name
-```
+## API
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+| Ruta                  | Qué hace                                                                    |
+| --------------------- | --------------------------------------------------------------------------- |
+| `GET /api/libros`     | Los ocho libros del catálogo                                                |
+| `GET /api/categorias` | Las cuatro categorías                                                       |
+| `POST /api/pedidos`   | `{ lineas: [{ id, cantidad }] }` → 201 con el número, o 409 sin existencias |
 
-```bash
-ng generate --help
-```
+«El dragón que tenía hipo» no tiene existencias: un pedido con él siempre se rechaza.
 
-## Building
+## Etiquetas
 
-To build the project run:
+`git checkout <etiqueta>` deja el código en ese paso. `main` es el final.
 
-```bash
-ng build
-```
+| Etiqueta             | Paso                                                        |
+| -------------------- | ----------------------------------------------------------- |
+| `paso-0-ng-new`      | Lo que genera `ng new`, sin tocar                           |
+| `paso-1-partida`     | Catálogo, Cesta (vacía), el proxy y la API                  |
+| `paso-2-store`       | NgRx Store vacío y Redux DevTools                           |
+| `paso-3-acciones`    | Acciones: el catálogo despacha «Libro elegido»              |
+| `paso-4-reducer`     | El reducer: la rama `cesta` del estado                      |
+| `paso-5-selectores`  | Selectores: unidades y total, la cabecera y la página Cesta |
+| `paso-6-efectos`     | Efectos: el pedido viaja a la API                           |
+| `paso-7-signalstore` | SignalStore de categorías, en los providers del catálogo    |
+| `paso-8-root`        | El SignalStore de categorías, en root                       |
+| `paso-9-local`       | Los filtros del catálogo, en un SignalStore local           |
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Ramas laterales, que salen de `paso-9-local`:
 
-## Running unit tests
+| Etiqueta               | Qué es                                                     |
+| ---------------------- | ---------------------------------------------------------- |
+| `alternativa-servicio` | La cesta con un servicio y signals, sin NgRx Store         |
+| `alternativa-ngxs`     | La cesta con NGXS (después del checkout: `npm install`)    |
+| `ejercicio-1-ejemplar` | Solución del ejercicio 1: un ejemplar menos                |
+| `ejercicio-2-guardar`  | Solución del ejercicio 2: la cesta sobrevive a una recarga |
+| `ejercicio-3-subir`    | Solución del ejercicio 3: los filtros, globales            |
+| `ejercicio-4-url`      | Solución del ejercicio 4: los filtros, en la URL           |
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Después de cambiar a una etiqueta con dependencias distintas, ejecuta `npm install` y reinicia `npm start`.
