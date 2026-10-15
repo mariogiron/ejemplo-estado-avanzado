@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { selectUnidades } from './cesta/cesta.selectors';
+import { Store } from '@ngxs/store';
+import { CestaState } from './cesta/cesta.state';
 
 @Component({
   selector: 'app-root',
@@ -13,5 +13,5 @@ export class App {
   private readonly store = inject(Store);
 
   /** Un signal que se actualiza cada vez que cambia lo que devuelve el selector. */
-  protected readonly unidades = this.store.selectSignal(selectUnidades);
+  protected readonly unidades = this.store.selectSignal(CestaState.unidades);
 }

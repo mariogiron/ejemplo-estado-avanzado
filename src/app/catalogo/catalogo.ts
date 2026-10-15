@@ -1,9 +1,9 @@
 import { CurrencyPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store } from '@ngxs/store';
 import { CategoriasStore } from '../categorias.store';
-import { CatalogoActions } from '../cesta/cesta.actions';
+import { LibroElegido } from '../cesta/cesta.state';
 import { Libro } from '../libro';
 import { FiltrosStore } from './filtros.store';
 
@@ -84,6 +84,6 @@ export class Catalogo {
 
   /** El componente no cambia la cesta: cuenta lo que ha pasado y el Store decide. */
   protected elegir(libro: Libro) {
-    this.store.dispatch(CatalogoActions.libroElegido({ libro }));
+    this.store.dispatch(new LibroElegido(libro));
   }
 }

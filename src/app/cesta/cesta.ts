@@ -1,9 +1,8 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store } from '@ngxs/store';
 import { CategoriasStore } from '../categorias.store';
-import { CestaActions } from './cesta.actions';
-import { selectAviso, selectEnviando, selectLineas, selectTotal } from './cesta.selectors';
+import { CestaState, CestaVaciada, LibroQuitado, PedidoConfirmado } from './cesta.state';
 
 @Component({
   selector: 'app-cesta',
@@ -51,21 +50,21 @@ export class Cesta {
   private readonly store = inject(Store);
   protected readonly categorias = inject(CategoriasStore);
 
-  protected readonly lineas = this.store.selectSignal(selectLineas);
-  protected readonly total = this.store.selectSignal(selectTotal);
-  protected readonly enviando = this.store.selectSignal(selectEnviando);
-  protected readonly aviso = this.store.selectSignal(selectAviso);
+  protected readonly lineas = this.store.selectSignal(CestaState.lineas);
+  protected readonly total = this.store.selectSignal(CestaState.total);
+  protected readonly enviando = this.store.selectSignal(CestaState.enviando);
+  protected readonly aviso = this.store.selectSignal(CestaState.aviso);
 
   protected quitar(id: string) {
-    this.store.dispatch(CestaActions.libroQuitado({ id }));
+    this.store.dispatch(new LibroQuitado(id));
   }
 
   protected vaciar() {
-    this.store.dispatch(CestaActions.cestaVaciada());
+    this.store.dispatch(new CestaVaciada());
   }
 
   /** La página no llama a la API: despacha la acción, y el efecto se encarga. */
   protected confirmar() {
-    this.store.dispatch(CestaActions.pedidoConfirmado({ lineas: this.lineas() }));
+    this.store.dispatch(new PedidoConfirmado());
   }
 }
