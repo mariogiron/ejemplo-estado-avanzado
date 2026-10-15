@@ -1,33 +1,31 @@
 import { CurrencyPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { CategoriasStore } from '../categorias.store';
 import { CatalogoActions } from '../cesta/cesta.actions';
 import { Libro } from '../libro';
-import { FiltrosStore } from './filtros.store';
 
 @Component({
   selector: 'app-catalogo',
   imports: [CurrencyPipe],
-  // Estado local: los filtros nacen con la página y mueren con ella
-  providers: [FiltrosStore],
   template: `
     <h1>Catálogo</h1>
     <div class="filtros">
       <input
         #texto
         placeholder="Buscar por título o autor"
-        [value]="filtros.texto()"
-        (input)="filtros.buscar(texto.value)"
+        [value]="q()"
+        (input)="filtrar({ q: texto.value })"
       />
-      <select #categoria (change)="filtros.elegirCategoria(categoria.value)">
-        <option value="" [selected]="!filtros.categoria()">Todas las categorías</option>
+      <select #lista (change)="filtrar({ categoria: lista.value })">
+        <option value="" [selected]="!categoria()">Todas las categorías</option>
         @for (c of categorias.categorias(); track c.id) {
-          <option [value]="c.id" [selected]="c.id === filtros.categoria()">{{ c.nombre }}</option>
+          <option [value]="c.id" [selected]="c.id === categoria()">{{ c.nombre }}</option>
         }
       </select>
-      <button (click)="filtros.limpiar()">Limpiar</button>
+      <button (click)="limpiar()">Limpiar</button>
     </div>
 
     @if (libros.isLoading()) {
@@ -66,21 +64,37 @@ import { FiltrosStore } from './filtros.store';
 export class Catalogo {
   private readonly store = inject(Store);
   protected readonly categorias = inject(CategoriasStore);
-  protected readonly filtros = inject(FiltrosStore);
+  private readonly router = inject(Router);
+
+  /** Estado de la URL: ?q=…&categoria=… La barra de direcciones es la fuente de verdad. */
+  readonly q = input('', { transform: (valor: string | undefined) => valor ?? '' });
+  readonly categoria = input('', { transform: (valor: string | undefined) => valor ?? '' });
 
   /** Estado del servidor: el catálogo es de la API. Aquí solo hay una copia. */
   protected readonly libros = httpResource<Libro[]>(() => '/api/libros');
 
   /** Estado derivado: no se guarda, se calcula con los libros y los filtros. */
   protected readonly visibles = computed(() => {
-    const texto = this.filtros.texto().toLowerCase();
-    const categoria = this.filtros.categoria();
+    const texto = this.q().toLowerCase();
+    const categoria = this.categoria();
     return (this.libros.value() ?? []).filter(
       (libro) =>
         (!categoria || libro.categoria === categoria) &&
         (libro.titulo.toLowerCase().includes(texto) || libro.autor.toLowerCase().includes(texto)),
     );
   });
+
+  /** Cambiar un filtro es navegar: la URL cambia, y las entradas q y categoria con ella. */
+  protected filtrar(cambio: { q?: string; categoria?: string }) {
+    const queryParams = Object.fromEntries(
+      Object.entries(cambio).map(([clave, valor]) => [clave, valor || null]), // '' → se quita
+    );
+    void this.router.navigate([], { queryParams, queryParamsHandling: 'merge', replaceUrl: true });
+  }
+
+  protected limpiar() {
+    void this.router.navigate([], { queryParams: {}, replaceUrl: true });
+  }
 
   /** El componente no cambia la cesta: cuenta lo que ha pasado y el Store decide. */
   protected elegir(libro: Libro) {
