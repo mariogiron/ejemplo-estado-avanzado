@@ -40,6 +40,14 @@ export const cestaFeature = createFeature({
       lineas: estado.lineas.filter((linea) => linea.libro.id !== id),
     })),
     on(CestaActions.cestaVaciada, (estado) => ({ ...estado, lineas: [] })),
+    on(CestaActions.ejemplarQuitado, (estado, { id }) => ({
+      ...estado,
+      lineas: estado.lineas
+        .map((linea) =>
+          linea.libro.id === id ? { ...linea, cantidad: linea.cantidad - 1 } : linea,
+        )
+        .filter((linea) => linea.cantidad > 0),
+    })),
     // El reducer no llama a la API: solo apunta que el pedido está en camino
     on(CestaActions.pedidoConfirmado, (estado) => ({ ...estado, enviando: true, aviso: '' })),
     on(PedidosApiActions.pedidoAceptado, (estado, { numero }) => ({

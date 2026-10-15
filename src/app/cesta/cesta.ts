@@ -22,6 +22,7 @@ import { selectAviso, selectEnviando, selectLineas, selectTotal } from './cesta.
             {{ linea.cantidad }} × <strong>{{ linea.libro.titulo }}</strong> ·
             {{ categorias.nombres().get(linea.libro.categoria) }} ·
             {{ linea.cantidad * linea.libro.precio | currency: 'EUR' }}
+            <button (click)="quitarEjemplar(linea.libro.id)">−1</button>
             <button (click)="quitar(linea.libro.id)">Quitar</button>
           </li>
         }
@@ -58,6 +59,10 @@ export class Cesta {
 
   protected quitar(id: string) {
     this.store.dispatch(CestaActions.libroQuitado({ id }));
+  }
+
+  protected quitarEjemplar(id: string) {
+    this.store.dispatch(CestaActions.ejemplarQuitado({ id }));
   }
 
   protected vaciar() {

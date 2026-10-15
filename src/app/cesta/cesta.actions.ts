@@ -15,6 +15,7 @@ export const CestaActions = createActionGroup({
   source: 'Cesta',
   events: {
     'Libro quitado': props<{ id: string }>(),
+    'Ejemplar quitado': props<{ id: string }>(),
     'Cesta vaciada': emptyProps(),
     'Pedido confirmado': props<{ lineas: Linea[] }>(),
   },
