@@ -12,6 +12,7 @@ const sinFiltros: EstadoFiltros = { texto: '', categoria: '' };
  * Sin providedIn: cada componente que lo ponga en sus providers tiene el suyo, y muere con él.
  */
 export const FiltrosStore = signalStore(
+  { providedIn: 'root' }, // ejercicio 3: los filtros pasan a ser globales
   withState(sinFiltros),
   withMethods((store) => ({
     buscar(texto: string) {

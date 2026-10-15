@@ -10,8 +10,6 @@ import { FiltrosStore } from './filtros.store';
 @Component({
   selector: 'app-catalogo',
   imports: [CurrencyPipe],
-  // Estado local: los filtros nacen con la página y mueren con ella
-  providers: [FiltrosStore],
   template: `
     <h1>Catálogo</h1>
     <div class="filtros">
