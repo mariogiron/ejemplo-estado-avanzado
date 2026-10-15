@@ -18,7 +18,7 @@ export interface EstadoCesta {
 }
 
 const estadoInicial: EstadoCesta = {
-  lineas: [],
+  lineas: lineasGuardadas(),
   enviando: false,
   aviso: '',
 };
@@ -65,4 +65,13 @@ function anadir(lineas: Linea[], libro: Libro): Linea[] {
   return lineas.map((linea) =>
     linea === existente ? { ...linea, cantidad: linea.cantidad + 1 } : linea,
   );
+}
+
+/** Lo que se guardó en la visita anterior. Si no hay nada, o está estropeado, una cesta vacía. */
+function lineasGuardadas(): Linea[] {
+  try {
+    return JSON.parse(localStorage.getItem('cesta') ?? '[]');
+  } catch {
+    return [];
+  }
 }

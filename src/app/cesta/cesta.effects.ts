@@ -1,8 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, exhaustMap, map, of } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { catchError, exhaustMap, map, of, skip, tap } from 'rxjs';
 import { CestaActions, PedidosApiActions } from './cesta.actions';
+import { cestaFeature } from './cesta.reducer';
 
 /**
  * Un efecto escucha acciones, habla con el exterior y devuelve otra acción.
@@ -32,4 +34,14 @@ export const enviarPedido = createEffect(
       ),
     ),
   { functional: true },
+);
+
+/** Un efecto que no despacha nada: cada vez que cambian las líneas, las guarda en localStorage. */
+export const guardarCesta = createEffect(
+  (store = inject(Store)) =>
+    store.select(cestaFeature.selectLineas).pipe(
+      skip(1), // la primera emisión es el estado inicial, que acaba de leerse de localStorage
+      tap((lineas) => localStorage.setItem('cesta', JSON.stringify(lineas))),
+    ),
+  { functional: true, dispatch: false },
 );
