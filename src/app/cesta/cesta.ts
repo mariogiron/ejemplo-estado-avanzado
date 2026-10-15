@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { CategoriasStore } from '../categorias.store';
 import { CestaActions } from './cesta.actions';
 import { selectAviso, selectEnviando, selectLineas, selectTotal } from './cesta.selectors';
 
@@ -19,6 +20,7 @@ import { selectAviso, selectEnviando, selectLineas, selectTotal } from './cesta.
         @for (linea of lineas(); track linea.libro.id) {
           <li>
             {{ linea.cantidad }} × <strong>{{ linea.libro.titulo }}</strong> ·
+            {{ categorias.nombres().get(linea.libro.categoria) }} ·
             {{ linea.cantidad * linea.libro.precio | currency: 'EUR' }}
             <button (click)="quitar(linea.libro.id)">Quitar</button>
           </li>
@@ -47,6 +49,7 @@ import { selectAviso, selectEnviando, selectLineas, selectTotal } from './cesta.
 })
 export class Cesta {
   private readonly store = inject(Store);
+  protected readonly categorias = inject(CategoriasStore);
 
   protected readonly lineas = this.store.selectSignal(selectLineas);
   protected readonly total = this.store.selectSignal(selectTotal);

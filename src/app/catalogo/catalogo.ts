@@ -9,8 +9,6 @@ import { Libro } from '../libro';
 @Component({
   selector: 'app-catalogo',
   imports: [CurrencyPipe],
-  // El store vive con el componente: se crea al entrar en la página y se destruye al salir
-  providers: [CategoriasStore],
   template: `
     <h1>Catálogo</h1>
     @if (categorias.cargando()) {

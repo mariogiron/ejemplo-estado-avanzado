@@ -23,6 +23,8 @@ interface EstadoCategorias {
 
 /** Un SignalStore: un servicio con signals, montado por piezas. */
 export const CategoriasStore = signalStore(
+  // Una sola instancia para toda la aplicación: se crea la primera vez que alguien lo pide
+  { providedIn: 'root' },
   // 1. El estado. Cada propiedad se lee como un signal: store.categorias()
   withState<EstadoCategorias>({ categorias: [], cargando: false }),
   // 2. Valores derivados, como un computed
@@ -38,7 +40,7 @@ export const CategoriasStore = signalStore(
       patchState(store, { categorias, cargando: false });
     },
   })),
-  // 4. El ciclo de vida: al crearse el store, carga las categorías
+  // 4. El ciclo de vida: al crearse el store, carga las categorías. Al vivir en root, una sola vez
   withHooks({
     onInit(store) {
       void store.cargar();
